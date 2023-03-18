@@ -125,15 +125,6 @@ def add_comment(request, post_id):
 
 @login_required
 def follow_index(request):
-    # user = request.user
-    # posts = user.follower.author
-    # print('*' * 50)
-    # print(posts)
-    # print(type(posts))
-
-    # following = user.following.values_list('author', flat=True)
-    # print(following)
-    # posts = Post.objects.filter(author__in=following)
 
     posts = Post.objects.filter(author__following__user=request.user)
 
@@ -144,7 +135,7 @@ def follow_index(request):
         'page_obj': page_obj,
         'title': 'Подписки',
     }
-    return render(request, 'posts/follow.html', context)
+    return render(request, 'posts/index.html', context)
 
 
 @login_required
@@ -152,7 +143,7 @@ def profile_follow(request, username):
     user = request.user
     author = User.objects.get(username=username)
     is_follower = Follow.objects.filter(user=user, author=author)
-    if not is_follower.exists():
+    if not is_follower.exists() and user != author:
         Follow.objects.create(user=user, author=author)
     return redirect('posts:profile', username=username)
 
