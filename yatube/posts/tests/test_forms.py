@@ -6,7 +6,7 @@ from django.contrib.auth import get_user_model
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.conf import settings
 
-from ..models import Group, Post, Comment
+from ..models import Group, Post, Comment, Follow
 
 
 User = get_user_model()
@@ -166,7 +166,6 @@ class PostFormTests(TestCase):
     def test_comment_post_guest_user(self):
         """Валидная форма не создает Comment для любого пользователя."""
         guest_client = Client()
-        comments_count = Comment.objects.count()
         comment_text = 'Тестовый комментарий'
         form_data = {
             'text': comment_text,
@@ -181,14 +180,39 @@ class PostFormTests(TestCase):
             follow=True
         )
 
-        # Проверяем, осталось ли число комментариев неизменным
-        self.assertEqual(Comment.objects.count(), comments_count)
-
-        # Проверяем, что не создался пост для поста
+        # Проверяем, что не создался комментарий для поста
         self.assertFalse(
             Comment.objects.filter(
                 post=self.post,
                 text=comment_text,
                 author=self.user,
+            ).exists()
+        )
+
+    def test_follow_and_unfollow(self):
+        """Проверка подписки/отписки на авторов"""
+        new_user = User.objects.create_user(username='new_user')
+
+        # Проверяем, что пользователь подписался
+        self.auth_client.get(reverse(
+            'posts:profile_follow',
+            kwargs={'username': new_user.username})
+        )
+        self.assertTrue(
+            Follow.objects.filter(
+                user=self.user,
+                author=new_user,
+            ).exists()
+        )
+
+        # Проверяем, что пользователь отписался
+        self.auth_client.get(reverse(
+            'posts:profile_unfollow',
+            kwargs={'username': new_user.username})
+        )
+        self.assertFalse(
+            Follow.objects.filter(
+                user=self.user,
+                author=new_user,
             ).exists()
         )

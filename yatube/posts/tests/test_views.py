@@ -10,7 +10,7 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from django.conf import settings
 from django.core.cache import cache
 
-from ..models import Group, Post
+from ..models import Group, Post, Follow
 
 User = get_user_model()
 
@@ -172,6 +172,35 @@ class PostPagesTests(TestCase):
                 with self.subTest(value=value):
                     form_field = response.context.get('form').fields.get(value)
                     self.assertIsInstance(form_field, expected)
+
+    def test_follow_index_show_correct_context(self):
+        """
+        Новая запись пользователя появляется в ленте тех, кто на него
+        подписан и не появляется в ленте тех, кто не подписан.
+        """
+        user_folower = User.objects.create_user(username='folower')
+        folower = Client()
+        folower.force_login(user_folower)
+
+        user_no_folower = User.objects.create_user(username='no_folower')
+        no_folower = Client()
+        no_folower.force_login(user_no_folower)
+
+        Follow.objects.create(user=user_folower, author=self.user)
+
+        new_post = Post.objects.create(
+            author=self.user,
+            text='Тестовый пост для подписчиков',
+        )
+
+        # Проверяем, что у подписанного пользователя появилась новая запись
+        response = folower.get(reverse('posts:follow_index'))
+        new_post_on_page = response.context.get('page_obj')[0]
+        self.assertEqual(new_post_on_page, new_post)
+
+        # Проверяем, что у неподписанного пользователя нет новых записей
+        response = no_folower.get(reverse('posts:follow_index'))
+        self.assertEqual(len(response.context.get('page_obj')), 0)
 
     def test_cache_main_menu(self):
         """Проверка работы кеша на главной странице"""

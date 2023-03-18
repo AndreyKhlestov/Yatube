@@ -34,7 +34,7 @@ class PostURLTests(TestCase):
         templates_url_names = {
             '/': 'posts/index.html',
             f'/group/{self.group.slug}/': 'posts/group_list.html',
-            '/profile/auth/': 'posts/profile.html',
+            f'/profile/{self.user.username}/': 'posts/profile.html',
             f'/posts/{self.post.id}/': 'posts/post_detail.html',
         }
         for address, temlate in templates_url_names.items():
