@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Профайл пользователя 
+    {% if author.get_full_name %}
+        {{ author.get_full_name }}
+    {% else %}
+        {{ author.username }}
+    {% endif %}
+
+{% endblock %}
+
+{% block content %}
+
+    <div class="container py-5">        
+        <h1>Все посты пользователя 
+            {% if author.get_full_name %}
+                {{ author.get_full_name }}
+            {% else %}
+                {{ author.username }}
+            {% endif %}
+        </h1>
+        <h3>Всего постов: {{ posts.count }}</h3>
+        {% for post in page_obj %}
+
+            {% include "post_card.html" %}
+        
+        {% endfor %}
+        {% include 'posts/includes/paginator.html' %}
+    </div>
+
+{% endblock %} 
