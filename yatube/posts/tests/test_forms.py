@@ -1,5 +1,6 @@
 import tempfile
 import shutil
+
 from django.test import Client, TestCase, override_settings
 from django.urls import reverse
 from django.contrib.auth import get_user_model
@@ -127,6 +128,33 @@ class PostFormTests(TestCase):
         self.assertEqual(new_post.text, new_text_post)
         self.assertEqual(new_post.group, new_group)
         self.assertEqual(new_post.image.name, f"posts/{uploaded.name}")
+        # self.assertFormError()
+
+    def test_error_in_form_sent_not_picture(self):
+        """Проверка, ошибки при отправки не картинки."""
+        uploaded = SimpleUploadedFile(
+            name='file.txt',
+            content=b'file_content',
+        )
+        form_data = {
+            'text': self.post.text,
+            'image': uploaded,
+        }
+        # Изменяем POST-запрос с некорректным файлом
+        response = self.auth_client.post(
+            reverse('posts:post_edit', kwargs={'post_id': self.post.id}),
+            data=form_data,
+            follow=True
+        )
+
+        # Проверяем, что форма возвращает ошибку
+        self.assertFormError(
+            response,
+            'form',
+            'image',
+            ('Загрузите правильное изображение. Файл, который вы загрузили, '
+             'поврежден или не является изображением.')
+        )
 
     def test_comment_post_auth_user(self):
         """Валидная форма создает Comment."""
@@ -189,8 +217,8 @@ class PostFormTests(TestCase):
             ).exists()
         )
 
-    def test_follow_and_unfollow(self):
-        """Проверка подписки/отписки на авторов"""
+    def test_follow(self):
+        """Проверка подписки на автора"""
         new_user = User.objects.create_user(username='new_user')
 
         # Проверяем, что пользователь подписался
@@ -204,6 +232,11 @@ class PostFormTests(TestCase):
                 author=new_user,
             ).exists()
         )
+
+    def test_unfollow(self):
+        """Проверка отписки на автора"""
+        new_user = User.objects.create_user(username='new_user')
+        Follow.objects.create(user=new_user, author=self.user)
 
         # Проверяем, что пользователь отписался
         self.auth_client.get(reverse(

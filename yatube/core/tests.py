@@ -1,6 +1,6 @@
-from django.test import TestCase
-
 from http import HTTPStatus
+
+from django.test import TestCase
 
 
 class ViewErrorTests(TestCase):
