@@ -128,7 +128,6 @@ class PostFormTests(TestCase):
         self.assertEqual(new_post.text, new_text_post)
         self.assertEqual(new_post.group, new_group)
         self.assertEqual(new_post.image.name, f"posts/{uploaded.name}")
-        # self.assertFormError()
 
     def test_error_in_form_sent_not_picture(self):
         """Проверка, ошибки при отправки не картинки."""
