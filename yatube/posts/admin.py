@@ -5,7 +5,7 @@ from .models import Post, Group, Comment
 
 class PostAdmin(admin.ModelAdmin):
     list_display = ('pk', 'text', 'created', 'author', 'group', 'image')
-    list_editable = ('group',)
+    list_editable = ('group', 'image',)
     search_fields = ('text',)
     list_filter = ('created',)
     empty_value_display = '-пусто-'

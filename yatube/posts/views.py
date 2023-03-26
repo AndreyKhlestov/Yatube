@@ -6,6 +6,7 @@ from django.views.decorators.cache import cache_page
 
 from .models import Post, Group, User, Follow
 from .forms import PostForm, CommentForm
+from PIL import Image
 
 
 NUM_POSTS = 10

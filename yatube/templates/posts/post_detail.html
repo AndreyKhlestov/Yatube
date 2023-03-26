@@ -37,10 +37,12 @@
 
       </aside>
       <article class="col-12 col-md-9">
-
-        {% thumbnail post.image "800x600" crop="center" upscale=True as im %}
+        
+        {% thumbnail post.image "800x600" format="GIF" crop="center" upscale=True format="gif" as im %}
+          <li>{{ im.url }}</li>
           <img class="card-img my-2" src="{{ im.url }}">
         {% endthumbnail %}
+        <li>{{ im.url }}</li>
 
         <p>{{ post.text|linebreaksbr }}</p>
         
