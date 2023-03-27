@@ -32,27 +32,27 @@
             <a href="{% url 'posts:profile' post.author %}">
               все посты пользователя
             </a>
-          </li>
-        </ul>
-
-      </aside>
+            </li>
+          </ul>
+        </aside>
       <article class="col-12 col-md-9">
-        
-        {% thumbnail post.image "800x600" format="GIF" crop="center" upscale=True format="gif" as im %}
-          <li>{{ im.url }}</li>
-          <img class="card-img my-2" src="{{ im.url }}">
-        {% endthumbnail %}
-        <li>{{ im.url }}</li>
-
-        <p>{{ post.text|linebreaksbr }}</p>
-        
-        {% if post.author == request.user %}
-          <a class="btn btn-primary" href="{% url 'posts:post_edit' post.id %}">
-          редактировать запись
-          </a>
-        {% endif %}
-        {% include "includes/comments.html" %}
-      </article>
+        <div class="row" style="padding-top: 30px">
+          <div class="col-12 col-md-3">
+            {% thumbnail post.image "800x600" format="GIF" crop="center" upscale=True as im %}
+              <img class="card-img my-2" src="{{ im.url }}">
+            {% endthumbnail %}
+            </div>
+          <div class="col-12 col-md-9">
+            <p>{{ post.text|linebreaksbr }}</p>
+            </div>
+          </div>
+          {% if post.author == request.user %}
+              <a class="btn btn-primary" href="{% url 'posts:post_edit' post.id %}">
+              редактировать запись
+              </a>
+            {% endif %}
+            {% include "includes/comments.html" %}
+        </article>
+      </div>
     </div>
-  </div>
 {% endblock %} 
