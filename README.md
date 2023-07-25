@@ -1,4 +1,8 @@
 # Yatube
-Pet-project developed on Django
+Pet-project developed on Djang\
+
+
+!
+
 
  
